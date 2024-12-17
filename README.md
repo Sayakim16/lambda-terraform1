@@ -32,13 +32,14 @@ Usage
 1. Clone the Repository
 bash
 Copy code
-git clone https://github.com/Sayakim16/Universitytask.git
-cd Universitytask
+git clone https://github.com/Sayakim16/lambda-terraform1.git
+cd lambda-terraform1
 2. Update Configuration
 Edit main.tf:
 
 Replace path/to/your/lambda_function.zip with your ZIP file path.
 Replace S3 bucket names (my-lambda-code-bucket and my-terraform-state-bucket).
+
 3. Deploy Infrastructure
 Initialize, plan, and apply Terraform:
 
