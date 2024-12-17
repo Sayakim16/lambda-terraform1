@@ -32,8 +32,8 @@ Usage
 1. Clone the Repository
 bash
 Copy code
-git clone https://github.com/Sayakim16/Universitytask.git
-cd Universitytask
+git clone https://github.com/Sayakim16/lambda-terraform1.git
+cd lambda-terraform1
 2. Update Configuration
 Edit main.tf:
 
