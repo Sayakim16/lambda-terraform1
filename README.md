@@ -39,6 +39,7 @@ Edit main.tf:
 
 Replace path/to/your/lambda_function.zip with your ZIP file path.
 Replace S3 bucket names (my-lambda-code-bucket and my-terraform-state-bucket).
+
 3. Deploy Infrastructure
 Initialize, plan, and apply Terraform:
 
