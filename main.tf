@@ -2,16 +2,16 @@ provider "aws" {
     region = "us-east-1"
 }
 
-# S3 bucket
+# S3 bucket for Lambda function and Terraform state 
 resource "aws_s3_bucket" "lambda_bucket" {
     bucket = "my-lambda-univer-bucket"
 }
 
-# S3 object (lambda function zip file)
+# Upload Lambda Function ZIP file to S3
 resource "aws_s3_object" "lambda_zip" {
     bucket = aws_s3_bucket.lambda_bucket.id
     key    = "lambda_function.zip"
-    source = "lambda_function/lambda_function.zip"  # Path to your ZIP file
+    source = "lambda_function/lambda_function.zip"  # Local Path to Lambda ZIP file
 }
 
 # IAM role for Lambda
@@ -32,12 +32,13 @@ resource "aws_iam_role" "lambda_role" {
     })
 }
 
+# Attach AWSLambdaBasicExecutionRole to Lambda role resource 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
     role       = aws_iam_role.lambda_role.name
     policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Lambda function
+# Lambda function definition
 resource "aws_lambda_function" "my_lambda" {
     function_name = "my_lambda_function"
     s3_bucket     = aws_s3_bucket.lambda_bucket.bucket
@@ -47,18 +48,20 @@ resource "aws_lambda_function" "my_lambda" {
     role          = aws_iam_role.lambda_role.arn
 }
 
-# CloudWatch rule and target
+# CloudWatch Event Rule for cron job (every_5_minutes)
 resource "aws_cloudwatch_event_rule" "every_five_minutes" {
     name                = "every_five_minutes"
-    schedule_expression = "cron(*/5 * * * ? *)" 
+    schedule_expression = "cron(*/5 * * * ? *)" #Run every_5_minutes
 }
 
+# Event Target: Connect Cloud watch Rule to Lambda resource 
 resource "aws_cloudwatch_event_target" "lambda_target" {
     rule      = aws_cloudwatch_event_rule.every_five_minutes.name
     target_id = "lambda"
     arn       = aws_lambda_function.my_lambda.arn 
 }
 
+# Lambda Permission: Allow CloudWatch to invoke Lambda
 resource "aws_lambda_permission" "allow_cloudwatch" {
     statement_id  = "AllowExecutionFromCloudWatch"
     action        = "lambda:InvokeFunction"
@@ -67,6 +70,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
     source_arn    = aws_cloudwatch_event_rule.every_five_minutes.arn
 }
 
+# Terraform Backend Configuration
 terraform {
     backend "s3" {
         bucket = "my-lambda-univer-bucket"
